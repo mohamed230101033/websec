@@ -3,7 +3,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
 use App\Http\Controllers\Web\UsersController;
-use App\Http\Controllers\Web\PurchasesController;
+use Illuminate\Support\Facades\DB;
 
 Route::get('register', [UsersController::class, 'register'])->name('register');
 Route::post('register', [UsersController::class, 'doRegister'])->name('do_register');
@@ -17,17 +17,20 @@ Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_
 Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
 Route::get('users/edit_password/{user?}', [UsersController::class, 'editPassword'])->name('edit_password');
 Route::post('users/save_password/{user}', [UsersController::class, 'savePassword'])->name('save_password');
+Route::get('verify', [UsersController::class, 'verify'])->name('verify');
+Route::get('/auth/google', 
+[UsersController::class, 'redirectToGoogle'])
+->name('login_with_google');
 
-// Admin routes to add users
-Route::get('users/add', [UsersController::class, 'addUser'])->name('users_add');
-Route::post('users/add', [UsersController::class, 'saveUser'])->name('users_save_new');
+Route::get('/auth/google/callback', 
+[UsersController::class, 'handleGoogleCallback']);
+
+
 
 Route::get('products', [ProductsController::class, 'list'])->name('products_list');
 Route::get('products/edit/{product?}', [ProductsController::class, 'edit'])->name('products_edit');
 Route::post('products/save/{product?}', [ProductsController::class, 'save'])->name('products_save');
 Route::get('products/delete/{product}', [ProductsController::class, 'delete'])->name('products_delete');
-Route::get('products/hold/{product}', [ProductsController::class, 'hold'])->name('products_hold');
-Route::get('products/unhold/{product}', [ProductsController::class, 'unhold'])->name('products_unhold');
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,8 +54,22 @@ Route::get('/test', function () {
     return view('test');
 });
 
-// Purchase routes
-Route::get('my-purchases', [PurchasesController::class, 'list'])->name('purchases_list');
-Route::get('products/{product}/purchase', [PurchasesController::class, 'showPurchaseForm'])->name('purchase_form');
-Route::post('products/{product}/purchase', [PurchasesController::class, 'purchase'])->name('do_purchase');
-Route::post('users/{user}/add-credit', [PurchasesController::class, 'addCredit'])->name('add_credit');
+
+// To Drop A Table (Vulerability - SQL Injection)
+// Route::get('/sqli', function(Request $request){
+// $table = $request->query('table');
+// DB::unprepared("Drop Table $table");
+// return redirect('/');
+// });
+
+// To send a GET request to a URL (Vulerability - Open Redirect)
+// Route::get('/collect', function(Request $request){
+//     $name = $request->query('name');
+//     $credits = $request->query('credits');
+
+//     return response("Data Collected",200)
+//     ->header('Access-Control-Allow-Origin', '*')
+//     ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+//     ->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
+// });
+    

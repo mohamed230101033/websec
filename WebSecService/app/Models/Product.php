@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model  {
 
@@ -12,16 +11,6 @@ class Product extends Model  {
         'price',
         'model',
         'description',
-        'photo',
-        'stock',
-        'hold'
+        'photo'
     ];
-    
-    /**
-     * Get the purchases for the product.
-     */
-    public function purchases(): HasMany
-    {
-        return $this->hasMany(Purchase::class);
-    }
 }
